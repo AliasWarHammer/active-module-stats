@@ -23,8 +23,10 @@ void module_initializer(
     module->size = size;
     module->instances = instances;
     module->number_of_dependencies = number_of_dependencies;
+    module->dependencies = (char **)malloc(size(char *)*number_of_dependencies);
     for(int i=0 ; i<number_of_dependencies ; i++)
     {
+        module->dependencies[i] = (char *)malloc(size(char)*250);
         strcpy(module->dependencies[i], dependencies[i]);
     }
     module->status = status;
