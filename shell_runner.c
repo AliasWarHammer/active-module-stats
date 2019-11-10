@@ -1,50 +1,34 @@
 #include <stdio.h>
-#include <string.h>
+#define COMMAND_LEN 64
+#define DATA_SIZE 2048
 
-/*
-This function calls the df command using the popen function.
-The popen() function executes the specified command (in our case - df).
-It creates a pipe between the calling program and the executed command, 
-  and returns a pointer to a stream that can be used to either read from or write to the pipe.
-*/
-void df_call(){
-    char buf[1000];
-    int i;
-        FILE *fp = popen("df", "r");
+int main(int argc,char *argv[])
+{
 
-    fscanf(fp, "%s", buf);
-    if(feof(fp))
+    FILE *pf;
+    char command[COMMAND_LEN];
+    char data[DATA_SIZE];
+
+    // Execute a process listing
+    sprintf(command, "modinfo ");
+
+    // Setup our pipe for reading and execute our command.
+    pf = popen(command, "r");
+
+    if(!pf)
+    {
+        fprintf(stderr, "Error: Could not open pipe for output.\n");
         return;
-    printf("%s\t\t", buf);
-
-    for(i=0; i<4; i++)
-    f   scanf(fp, "%s", buf);
-
-    printf("%s\n", buf);
-
-    for(i=0; i<2; i++)
-        fscanf(fp, "%s", buf);
-
-    while (1){
-        fscanf(fp, "%s", buf);
-
-        if(feof(fp))
-            break;
-
-        printf("%s\t\t", buf);
-
-        for(i=0; i<4; i++)
-            fscanf(fp, "%s", buf);
-
-        if(strlen(buf) < 3)
-            printf("\t%s\n", buf);
-        else
-            printf("%s\n", buf);
-        fscanf(fp, "%s", buf);
     }
-    pclose(fp);
-}
 
-int main() {
-df_call();
+    // Grab data from process execution
+    while(fgets(data, DATA_SIZE , pf))
+    {
+        fprintf(stdout, "%s",data);
+    }
+
+    if (pclose(pf) != 0)
+        fprintf(stderr," Error: Failed to close command stream \n");
+
+    return 0;
 }
