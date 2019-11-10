@@ -87,15 +87,61 @@ int linecounter()
 
 void parser(Module *module, char *line)
 {
-    char *name;
+    char *name = (char *)malloc(sizeof(char)*250);
     unsigned int size;
     unsigned int instances;
-    unsigned int number_of_dependencies;
+    unsigned int number_of_dependencies = 0;
     char **dependencies;
     unsigned int status;
     unsigned long int offset;
+	
+	char str[] = "nf_conntrack 135168 5 ipt_MASQUERADE,nf_conntrack_netlink,nf_nat_ipv4,xt_conntrack,nf_nat, Loading 0x000000000000b000"; 
+  
+    char* token = strtok(str, " "); 
+    strcpy(name, token);
 
-    //
+    token = strtok(NULL, " ");
+    size = atoi(token);
 
+    token = strtok(NULL, " ");
+    instances = atoi(token);
+
+    token = strtok(NULL, " ");
+    char c = ',';
+    for (int i=0;i<strlen(token);i++)
+    {
+        if (token[i] == c) 
+            number_of_dependencies++; 
+    }
+    char *token2 = strtok(NULL, " ");
+    if(strcmp(token2, "Live")==0)
+    {
+    	status = 0;
+    }
+    else if(strcmp(token2, "Loading")==0)
+    {
+    	status = 1;
+    }
+    else if(strcmp(token2, "Unloading")==0)
+    {
+    	status = 2;
+    }
+
+    token2 = strtok(NULL, " ");
+    offset = (int)strtol(token2, NULL, 0);
+
+    char *token1 = strtok(token, ",");
+    dependencies = (char **)malloc(sizeof(char *)*number_of_dependencies);
+
+    for(int i =0; i<number_of_dependencies; i++)
+    {
+    	if(token1!=NULL)
+    	{
+    		dependencies[i] = (char *)malloc(sizeof(char)*250);
+    		strcpy(dependencies[i], token1);
+    		token1 = strtok(NULL, ",");
+
+    	}
+    }
     module_initializer(module, name, size, instances, number_of_dependencies, dependencies, status, offset)
 }
