@@ -52,16 +52,28 @@ void module_reader()
         fprintf(2, "** Unable to read file");
     }
     int position = 0;
+    int insert = 0;
     while ((read = getline(&line, &len, fp)) != -1)
     {
+        insert = 0;
         printf("%s", line);
-        parser(module[position], line);
-        position += 1;
+        insert = parser(module[position], line);
+        position += insert;
     }
     fclose(fp);
     for(int i=0; i<number_of_lines ; i++)
     {
-        
+        printf("Name                : %s\n", module[i]->name);
+        printf("size                : %d\n", module[i]->size);
+        printf("instances           : %d\n", module[i]->instances);
+        printf("no_of_dependencies  : %d\n", module[i]->number_of_dependencies);
+        printf("dependencies        :\n");
+        for(int i =0; i<module[i]->number_of_dependencies; i++)
+        {
+            printf("                    :%s\n", module[i]->dependencies[i]);
+        }
+        printf("status              : %d\n", module[i]->status);
+        printf("offset              : %lu\n", module[i]->offset);
     }
 }
 
@@ -85,7 +97,7 @@ int linecounter()
     return count; 
 }
 
-void parser(Module *module, char *line)
+int parser(Module *module, char *line)
 {
     char *name = (char *)malloc(sizeof(char)*250);
     unsigned int size;
@@ -148,5 +160,7 @@ void parser(Module *module, char *line)
     if(instances>0)
     {
         module_initializer(module, name, size, instances, number_of_dependencies, dependencies, status, offset);
+        return 1;
     }
+    return 0;
 }

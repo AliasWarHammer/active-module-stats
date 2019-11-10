@@ -24,6 +24,6 @@ void module_initializer(
 
 void module_reader();
 
-void parser(Module *module, char *line);
+int parser(Module *module, char *line);
 
 int linecounter();

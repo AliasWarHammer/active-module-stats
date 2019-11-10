@@ -6,5 +6,6 @@
 
 int main(int argc, char *argv)
 {
+    module_reader();
     return 0;
 }
