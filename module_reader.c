@@ -129,19 +129,24 @@ void parser(Module *module, char *line)
 
     token2 = strtok(NULL, " ");
     offset = (int)strtol(token2, NULL, 0);
-
-    char *token1 = strtok(token, ",");
-    dependencies = (char **)malloc(sizeof(char *)*number_of_dependencies);
-
-    for(int i =0; i<number_of_dependencies; i++)
+    if(number_of_dependencies > 0)
     {
-    	if(token1!=NULL)
-    	{
-    		dependencies[i] = (char *)malloc(sizeof(char)*250);
-    		strcpy(dependencies[i], token1);
-    		token1 = strtok(NULL, ",");
+        char *token1 = strtok(token, ",");
+        dependencies = (char **)malloc(sizeof(char *)*number_of_dependencies);
 
-    	}
+        for(int i =0; i<number_of_dependencies; i++)
+        {
+            if(token1!=NULL)
+            {
+                dependencies[i] = (char *)malloc(sizeof(char)*250);
+                strcpy(dependencies[i], token1);
+                token1 = strtok(NULL, ",");
+
+            }
+        }
     }
-    module_initializer(module, name, size, instances, number_of_dependencies, dependencies, status, offset)
+    if(instances>0)
+    {
+        module_initializer(module, name, size, instances, number_of_dependencies, dependencies, status, offset);
+    }
 }
