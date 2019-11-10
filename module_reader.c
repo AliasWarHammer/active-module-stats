@@ -43,20 +43,45 @@ void module_reader()
     {
         module[i] = (module *)malloc(sizeof(module));
     }
+    int position = 0;
     fp = fopen("/tmp/module.txt", "r");
     if (fp == NULL)
+    {
         fprintf(2, "** Unable to read file");
-    while ((read = getline(&line, &len, fp)) != -1) {
-        printf("Retrieved line of length %zu:\n", read);
+    }
+    int position = 0;
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
         printf("%s", line);
         parser(module[position], line);
+        position += 1;
     }
     fclose(fp);
-    if (line)
-        free(line);
-    exit(EXIT_SUCCESS);
+    for(int i=0; i<number_of_lines ; i++)
+    {
+        
+    }
 }
 
+int linecounter()
+{
+    FILE *fp; 
+    int count = 0; 
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    fp = fopen("/tmp/module.txt", "r"); 
+    if (fp == NULL) 
+    { 
+        fprintf(2, "** Unable to read file");
+    } 
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        count += 1;
+    }
+    fclose(fp); 
+    return count; 
+}
 
 void parser(Module *module, char *line)
 {
