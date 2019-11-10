@@ -10,6 +10,7 @@ Date: 10-11-2019
 #include "module_reader.h"
 #include "acquire_modinfo.h"
 
+// File that contains details of the modules
 #define READ_FILE "/proc/modules" 
 
 
@@ -41,6 +42,7 @@ void module_reader()
     size_t read;
     int number_of_lines = linecounter();
 
+    // Opens file and reads it line by line
     Module module[256];
     int position = 0;
     fp = fopen(READ_FILE, "r");
@@ -50,6 +52,8 @@ void module_reader()
     }
     position = 0;
     int insert = 0;
+
+    // Sends each line to the parser
     while ((read = getline(&line, &len, fp)) != -1)
     {
         insert = 0;
@@ -66,6 +70,8 @@ int linecounter()
     char *line = NULL;
     size_t len = 0;
     size_t read;
+
+    // Opens a file to count the number of lines
     fp = fopen(READ_FILE, "r"); 
     if (fp == NULL) 
     { 
@@ -89,6 +95,7 @@ int parser(Module *module, char *line)
     unsigned int status;
     unsigned long int offset;
 	
+    // Tokenize each line and parse
     char* token = strtok(line, " "); 
     strcpy(name, token);
 
@@ -106,32 +113,28 @@ int parser(Module *module, char *line)
             number_of_dependencies++; 
     }
     if(number_of_dependencies > 0)
-    {
         strcpy(dependencies, token);
         
-    }
     else
-    {
         strcpy(dependencies, "NULL");
-    }
+    
     token = strtok(NULL, " ");
+
+    // Parse the status
     if(strcmp(token, "Live")==0)
-    {
     	status = 0;
-    }
+    
     else if(strcmp(token, "Loading")==0)
-    {
     	status = 1;
-    }
+    
     else if(strcmp(token, "Unloading")==0)
-    {
     	status = 2;
-    }
 
     token = strtok(NULL, " ");
     offset = (int)strtol(token, NULL, 0);
     if(instances>0)
     {
+        // Print the info obtained from the file
         fprintf(stdout, "name:           %s\n", name);
         fprintf(stdout, "size:           %d\n", size);
         fprintf(stdout, "instances:      %d\n", instances);
@@ -139,6 +142,8 @@ int parser(Module *module, char *line)
         fprintf(stdout, "dependencies:   %s\n", dependencies);
         fprintf(stdout, "status:         %d\n", status);
         fprintf(stdout, "offset:         0x%x\n", offset);
+
+        // Passes the module name to the modinfo function to print additional info
         modinfo(name);
         fprintf(stdout, "\n");
         return 1;
