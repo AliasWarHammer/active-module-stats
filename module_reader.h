@@ -12,7 +12,8 @@ typedef struct my_modules
 }Module;
 
 void module_initializer(
-    Module *module, char *name, 
+    Module *module, 
+    char *name, 
     unsigned int size, 
     unsigned int instances, 
     unsigned int number_of_dependencies, 
@@ -22,3 +23,7 @@ void module_initializer(
     );
 
 void module_reader();
+
+void parser(Module *module, char *line);
+
+int linecounter();
