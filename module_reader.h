@@ -2,11 +2,11 @@
 
 typedef struct my_modules
 {
-    char *name;
+    char name[256];
     unsigned int size;
     unsigned int instances;
     unsigned int number_of_dependencies;
-    char **dependencies;
+    char dependencies[500];
     unsigned int status;
     unsigned long int offset;
 }Module;
@@ -17,7 +17,7 @@ void module_initializer(
     unsigned int size, 
     unsigned int instances, 
     unsigned int number_of_dependencies, 
-    char **dependencies, 
+    char *dependencies, 
     unsigned int status, 
     unsigned long int offset
     );

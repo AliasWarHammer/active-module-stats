@@ -1,12 +1,13 @@
 /* Authors : PES1201700241, Saahil Jain 
            : PES1201700190, Mithali Shashidhar 
-           : */
-#include<stdlib.h>
-#include<string.h>
-#include<sys/types.h>
-#include<sys/wait.h>
-#include<unistd.h>
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "module_reader.h"
+#include "acquire_modinfo.h"
+
+#define READ_FILE "/proc/modules" 
 
 void module_initializer(
     Module *module, 
@@ -14,7 +15,7 @@ void module_initializer(
     unsigned int size, 
     unsigned int instances, 
     unsigned int number_of_dependencies, 
-    char **dependencies, 
+    char *dependencies, 
     unsigned int status, 
     unsigned long int offset
     )
@@ -23,12 +24,7 @@ void module_initializer(
     module->size = size;
     module->instances = instances;
     module->number_of_dependencies = number_of_dependencies;
-    module->dependencies = (char **)malloc(sizeof(char *)*number_of_dependencies);
-    for(int i=0 ; i<number_of_dependencies ; i++)
-    {
-        module->dependencies[i] = (char *)malloc(sizeof(char)*250);
-        strcpy(module->dependencies[i], dependencies[i]);
-    }
+    strcpy(module->dependencies, dependencies);
     module->status = status;
     module->offset = offset;
 }
@@ -38,43 +34,25 @@ void module_reader()
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
     int number_of_lines = linecounter();
-    Module *module[number_of_lines];
-    for(int i=0; i<number_of_lines ; i++)
-    {
-        module[i] = (module *)malloc(sizeof(module));
-    }
+
+    Module module[256];
     int position = 0;
-    fp = fopen("/tmp/module.txt", "r");
+    fp = fopen(READ_FILE, "r");
     if (fp == NULL)
     {
-        fprintf(2, "** Unable to read file");
+        fprintf(stderr, "Error: Unable to read file");
     }
-    int position = 0;
+    position = 0;
     int insert = 0;
     while ((read = getline(&line, &len, fp)) != -1)
     {
         insert = 0;
-        printf("%s", line);
-        insert = parser(module[position], line);
+        insert = parser(&module[position], line);
         position += insert;
     }
     fclose(fp);
-    for(int i=0; i<number_of_lines ; i++)
-    {
-        printf("Name                : %s\n", module[i]->name);
-        printf("size                : %d\n", module[i]->size);
-        printf("instances           : %d\n", module[i]->instances);
-        printf("no_of_dependencies  : %d\n", module[i]->number_of_dependencies);
-        printf("dependencies        :\n");
-        for(int i =0; i<module[i]->number_of_dependencies; i++)
-        {
-            printf("                    :%s\n", module[i]->dependencies[i]);
-        }
-        printf("status              : %d\n", module[i]->status);
-        printf("offset              : %lu\n", module[i]->offset);
-    }
 }
 
 int linecounter()
@@ -83,11 +61,11 @@ int linecounter()
     int count = 0; 
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
-    fp = fopen("/tmp/module.txt", "r"); 
+    size_t read;
+    fp = fopen(READ_FILE, "r"); 
     if (fp == NULL) 
     { 
-        fprintf(2, "** Unable to read file");
+        fprintf(stderr, "Error: Unable to read file");
     } 
     while ((read = getline(&line, &len, fp)) != -1)
     {
@@ -103,13 +81,11 @@ int parser(Module *module, char *line)
     unsigned int size;
     unsigned int instances;
     unsigned int number_of_dependencies = 0;
-    char **dependencies;
+    char *dependencies = (char *)malloc(sizeof(char)*250);
     unsigned int status;
     unsigned long int offset;
 	
-	char str[] = "nf_conntrack 135168 5 ipt_MASQUERADE,nf_conntrack_netlink,nf_nat_ipv4,xt_conntrack,nf_nat, Loading 0x000000000000b000"; 
-  
-    char* token = strtok(str, " "); 
+    char* token = strtok(line, " "); 
     strcpy(name, token);
 
     token = strtok(NULL, " ");
@@ -125,41 +101,42 @@ int parser(Module *module, char *line)
         if (token[i] == c) 
             number_of_dependencies++; 
     }
-    char *token2 = strtok(NULL, " ");
-    if(strcmp(token2, "Live")==0)
+    if(number_of_dependencies > 0)
+    {
+        strcpy(dependencies, token);
+        
+    }
+    else
+    {
+        strcpy(dependencies, "NULL");
+    }
+    token = strtok(NULL, " ");
+    if(strcmp(token, "Live")==0)
     {
     	status = 0;
     }
-    else if(strcmp(token2, "Loading")==0)
+    else if(strcmp(token, "Loading")==0)
     {
     	status = 1;
     }
-    else if(strcmp(token2, "Unloading")==0)
+    else if(strcmp(token, "Unloading")==0)
     {
     	status = 2;
     }
 
-    token2 = strtok(NULL, " ");
-    offset = (int)strtol(token2, NULL, 0);
-    if(number_of_dependencies > 0)
-    {
-        char *token1 = strtok(token, ",");
-        dependencies = (char **)malloc(sizeof(char *)*number_of_dependencies);
-
-        for(int i =0; i<number_of_dependencies; i++)
-        {
-            if(token1!=NULL)
-            {
-                dependencies[i] = (char *)malloc(sizeof(char)*250);
-                strcpy(dependencies[i], token1);
-                token1 = strtok(NULL, ",");
-
-            }
-        }
-    }
+    token = strtok(NULL, " ");
+    offset = (int)strtol(token, NULL, 0);
     if(instances>0)
     {
-        module_initializer(module, name, size, instances, number_of_dependencies, dependencies, status, offset);
+        fprintf(stdout, "name:           %s\n", name);
+        fprintf(stdout, "size:           %d\n", size);
+        fprintf(stdout, "instances:      %d\n", instances);
+        fprintf(stdout, "dependencies_c: %d\n", number_of_dependencies);
+        fprintf(stdout, "dependencies:   %s\n", dependencies);
+        fprintf(stdout, "status:         %d\n", status);
+        fprintf(stdout, "offset:         0x%x\n", offset);
+        modinfo(name);
+        fprintf(stdout, "\n");
         return 1;
     }
     return 0;
