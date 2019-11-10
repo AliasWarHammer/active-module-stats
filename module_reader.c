@@ -9,6 +9,7 @@
 
 #define READ_FILE "/proc/modules" 
 
+
 void module_initializer(
     Module *module, 
     char *name, 
