@@ -2,7 +2,7 @@
 
 ## Problem statement
 
-Display the device driver/module statistics currently active in the Operating system.
+Display the device driver/module statistics currently active in the Operating System.
 
 ## Solution
 
@@ -32,7 +32,44 @@ Active modules are determined by the number of instances currently running.
 
 ## Data Structures
 
+This is the structure that stores data from the ```/proc/modules``` file.
+
+```
+typedef struct my_modules
+{
+    char name[256];
+    unsigned int size;
+    unsigned int instances;
+    unsigned int number_of_dependencies;
+    char dependencies[500];
+    unsigned int status;
+    unsigned long int offset;
+} Module;
+
+```
+
 ## Functions
+
+Refer to the header files for elaborate comments on the functionality of each of the following functions.
+
+```
+
+void module_initializer(
+    Module *module, 
+    char *name, 
+    unsigned int size, 
+    unsigned int instances, 
+    unsigned int number_of_dependencies, 
+    char *dependencies, 
+    unsigned int status, 
+    unsigned long int offset
+    );
+void module_reader();
+int parser(Module *module, char *line);
+int linecounter();
+void modinfo(char *module);
+
+```
 
 ## Specifications
 

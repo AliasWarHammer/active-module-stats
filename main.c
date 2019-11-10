@@ -1,4 +1,7 @@
-/* Author : PES1201700134, Parth Shah */
+/*
+Author: PES1201700241, Saahil Jain
+Date: 10-11-2019
+*/
 
 #include <stdlib.h>
 #include <string.h>

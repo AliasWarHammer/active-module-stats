@@ -1,6 +1,9 @@
-/* Authors : PES1201700241, Saahil Jain 
-           : PES1201700190, Mithali Shashidhar 
+/*
+Authors:PES1201700241, Saahil Jain 
+        PES1201700190, Mithali Shashidhar 
+Date: 10-11-2019
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,11 +81,11 @@ int linecounter()
 
 int parser(Module *module, char *line)
 {
-    char *name = (char *)malloc(sizeof(char)*250);
+    char *name = (char *)malloc(sizeof(char)*256);
     unsigned int size;
     unsigned int instances;
     unsigned int number_of_dependencies = 0;
-    char *dependencies = (char *)malloc(sizeof(char)*250);
+    char *dependencies = (char *)malloc(sizeof(char)*256);
     unsigned int status;
     unsigned long int offset;
 	
