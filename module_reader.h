@@ -1,4 +1,8 @@
-/* Author : PES1201700241, Saahil Jain */
+/*
+Author: PES1201700241, Saahil Jain
+        PES1201700190, Mithali Shashidhar
+Date: 10-11-2019
+*/
 
 typedef struct my_modules
 {
@@ -6,7 +10,7 @@ typedef struct my_modules
     unsigned int size;
     unsigned int instances;
     unsigned int number_of_dependencies;
-    char dependencies[500];
+    char dependencies[512];
     unsigned int status;
     unsigned long int offset;
 }Module;

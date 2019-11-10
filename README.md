@@ -10,7 +10,7 @@ This utility for 18.04.1-Ubuntu (Linux version 5.0.0-29-generic) displays extend
 
 To run:
 
-```gcc -std=c99 ./main.c && ./a.out```
+```chmod 755 run.sh && ./run.sh```
 
 ## DCD
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Author: PES1201700134, Parth Shah
+# Date: 10-11-2019
+
 # Runs modinfo on each lsmod from /proc/modules
 
 while read p; do
